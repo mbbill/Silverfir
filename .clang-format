@@ -1,0 +1,75 @@
+﻿---
+AccessModifierOffset: '-4'
+AlignAfterOpenBracket: AlwaysBreak
+AlignConsecutiveAssignments: 'false'
+AlignConsecutiveDeclarations: 'false'
+AlignEscapedNewlines: Left
+AlignOperands: 'true'
+AlignTrailingComments: 'false'
+AllowAllParametersOfDeclarationOnNextLine: 'false'
+AllowShortBlocksOnASingleLine: 'false'
+AllowShortCaseLabelsOnASingleLine: 'false'
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: 'false'
+AllowShortLoopsOnASingleLine: 'false'
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: 'true'
+AlwaysBreakTemplateDeclarations: 'false'
+BinPackArguments: 'false'
+BinPackParameters: 'false'
+BreakBeforeBinaryOperators: All
+BreakBeforeBraces: 'Custom' #Stroustrup
+BraceWrapping:
+	AfterClass: 'true'
+	AfterEnum: 'false'
+	AfterFunction: 'false'
+	AfterStruct: 'false'
+	AfterUnion: 'false'
+	AfterExternBlock: 'false'
+	BeforeElse: 'false'
+	SplitEmptyFunction: 'false'
+	SplitEmptyRecord: 'false'
+	SplitEmptyNamespace: 'false'
+
+BreakBeforeInheritanceComma: 'false'
+BreakBeforeTernaryOperators: 'true'
+ColumnLimit: '0'
+CompactNamespaces: 'true'
+ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+ConstructorInitializerIndentWidth: '4'
+ContinuationIndentWidth: '4'
+#Cpp11BracedListStyle: 'true'
+DerivePointerAlignment: 'false'
+DisableFormat: 'false'
+ExperimentalAutoDetectBinPacking: 'false'
+FixNamespaceComments: 'true'
+IncludeBlocks: Regroup
+IndentCaseLabels: 'true'
+IndentPPDirectives: None
+IndentWidth: '4'
+IndentWrappedFunctionNames: 'false'
+KeepEmptyLinesAtTheStartOfBlocks: 'false'
+#Language: Cpp
+MaxEmptyLinesToKeep: '1'
+NamespaceIndentation: None
+PointerAlignment: Middle
+ReflowComments: 'false'
+SortIncludes: 'true'
+SortUsingDeclarations: 'true'
+SpaceAfterCStyleCast: 'false'
+SpaceAfterTemplateKeyword: 'false'
+SpaceBeforeAssignmentOperators: 'true'
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: 'false'
+SpacesInAngles: 'false'
+SpacesInCStyleCastParentheses: 'false'
+SpacesInContainerLiterals: 'false'
+SpacesInParentheses: 'false'
+SpacesInSquareBrackets: 'false'
+StatementMacros: ['macro']
+
+TabWidth: '4'
+UseTab: Never
+
+...
