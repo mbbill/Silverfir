@@ -628,8 +628,8 @@ r in_place_dt_call(thread * t, func_addr f_addr, value_u * args) {
                 }
                 CONVERT_OP(i32, s_truncf64u, f64);
             });
-            OP(i64_extend_i32_s, { CONVERT_OP(i64, s_extend32, i32); });
-            OP(i64_extend_i32_u, { CONVERT_OP(i64, s_extend32u, i32); });
+            OP(i64_extend_i32_s, { CONVERT_OP(i64, s_as_i32, i32); });
+            OP(i64_extend_i32_u, { CONVERT_OP(i64, s_as_i32u, i32); });
             OP(i64_trunc_f32_s, {
                 if (unlikely(s_isnan32((sp - 1)->u_f32) || (sp - 1)->u_f32 < -9223372036854775808.f || (sp - 1)->u_f32 >= 9223372036854775808.f)) {
                     return err(e_general, "trap");
@@ -668,11 +668,11 @@ r in_place_dt_call(thread * t, func_addr f_addr, value_u * args) {
             OP(i64_reinterpret_f64, { REINTERPRET_OP(i64, f64); });
             OP(f32_reinterpret_i32, { REINTERPRET_OP(f32, i32); });
             OP(f64_reinterpret_i64, { REINTERPRET_OP(f64, i64); });
-            OP(i32_extend8_s, { CONVERT_OP(i32, s_extend8, i32); });
-            OP(i32_extend16_s, { CONVERT_OP(i32, s_extend16, i32); });
-            OP(i64_extend8_s, { CONVERT_OP(i64, s_extend8, i32); });
-            OP(i64_extend16_s, { CONVERT_OP(i64, s_extend16, i32); });
-            OP(i64_extend32_s, { CONVERT_OP(i64, s_extend32, i64); });
+            OP(i32_extend8_s, { CONVERT_OP(i32, s_as_i8, i32); });
+            OP(i32_extend16_s, { CONVERT_OP(i32, s_as_i16, i32); });
+            OP(i64_extend8_s, { CONVERT_OP(i64, s_as_i8, i32); });
+            OP(i64_extend16_s, { CONVERT_OP(i64, s_as_i16, i32); });
+            OP(i64_extend32_s, { CONVERT_OP(i64, s_as_i32, i64); });
 
             OP(ref_null, {
                 stream_seek_unchecked(pc, 1);

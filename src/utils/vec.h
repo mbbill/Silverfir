@@ -223,6 +223,7 @@ extern void vec_undefined(int, ...);
     }
 
 #define VEC_DECL_FOR_TYPE_BUILTIN(type, _) \
+    UNUSED_FUNCTION_WARNING_PUSH           \
     VEC_TYPE_DECL(type, _)                 \
     VEC_IS_VALID_DECL(type, _)             \
     VEC_CLEAR_DECL(type, _)                \
@@ -238,7 +239,8 @@ extern void vec_undefined(int, ...);
     VEC_MEMMOVE_UNCHECKED_DECL(type, _)    \
     VEC_DUP_DECL(type, _)                  \
     VEC_AT_DECL(type, _)                   \
-    VEC_BACK_DECL(type, _)
+    VEC_BACK_DECL(type, _)                 \
+    UNUSED_FUNCTION_WARNING_POP
 
 #define VEC_DECL_FOR_TYPE(type) VEC_DECL_FOR_TYPE_BUILTIN(type, _)
 FOR_EACH_TYPE(VEC_DECL_FOR_TYPE_BUILTIN, _)

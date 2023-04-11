@@ -51,3 +51,14 @@
 #define NOINLINE __attribute__((noinline))
 #define MUSTTAIL __attribute__((musttail))
 #define INLINE __attribute__((always_inline)) static inline
+
+#if defined(__clang__)
+#define UNUSED_FUNCTION_WARNING_PUSH _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wunused-function\"")
+#define UNUSED_FUNCTION_WARNING_POP _Pragma("clang diagnostic pop")
+#elif defined(__GNUC__)
+#define UNUSED_FUNCTION_WARNING_PUSH _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wunused-function\"")
+#define UNUSED_FUNCTION_WARNING_POP _Pragma("GCC diagnostic pop")
+#else
+#define UNUSED_FUNCTION_WARNING_PUSH
+#define UNUSED_FUNCTION_WARNING_POP
+#endif

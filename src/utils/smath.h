@@ -161,7 +161,7 @@ INLINE f64 s_copysign64(f64 x, f64 sign) {
 #define s_truncf32u(x) ((u64)(truncf(x)))
 #define s_truncf64u(x) ((u64)(trunc(x)))
 
-#define s_extend8(x) (*((i8 *)(&x)))
-#define s_extend16(x) (*((i16 *)(&x)))
-#define s_extend32(x) (*((i32 *)(&x)))
-#define s_extend32u(x) (*((u32 *)(&x)))
+#define s_as_i8(x) (*((i8 *)(&x)))
+#define s_as_i16(x) (*((i16 *)(&x)))
+#define s_as_i32(x) (*((i32 *)(&x)))
+#define s_as_i32u(x) (*((u32 *)(&x)))

@@ -17,6 +17,7 @@
 // A generic doubly-linked list implementation
 // The object is copyable (moveable), which means you can copy it around but can only
 // manipulate the newest copied one.
+// In the end, make sure to call list_erase_##type to prevent memory leak.
 
 #pragma once
 
@@ -110,6 +111,7 @@
          iter = LIST_ITER_TO_WRAPPER(type, iter)->_prev ? &(LIST_ITER_TO_WRAPPER(type, iter)->_prev->_data) : NULL)
 
 #define LIST_DECL_FOR_TYPE_BUILTIN(type, _) \
+    UNUSED_FUNCTION_WARNING_PUSH            \
     LIST_TYPE_DECL(type, _)                 \
     LIST_PUSH_DECL(type, _)                 \
     LIST_POP_DECL(type, _)                  \
@@ -122,7 +124,8 @@
     LIST_FRONT_DECL(type, _)                \
     LIST_BACK_DECL(type, _)                 \
     LIST_ITER_NEXT_DECL(type, _)            \
-    LIST_ITER_PREV_DECL(type, _)
+    LIST_ITER_PREV_DECL(type, _)            \
+    UNUSED_FUNCTION_WARNING_POP
 
 #define LIST_DECL_FOR_TYPE(type) LIST_DECL_FOR_TYPE_BUILTIN(type, _)
 FOR_EACH_TYPE(LIST_DECL_FOR_TYPE_BUILTIN, _)

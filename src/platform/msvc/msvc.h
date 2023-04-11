@@ -46,3 +46,6 @@
 #define NOINLINE __declspec(noinline)
 #define MUSTTAIL
 #define INLINE __forceinline static
+
+#define UNUSED_FUNCTION_WARNING_PUSH
+#define UNUSED_FUNCTION_WARNING_POP

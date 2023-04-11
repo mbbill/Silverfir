@@ -3,25 +3,25 @@
     "configurations": [
 
         {
-            "name": "Unittests_debug(win)",
+            "name": "Unittests(win)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\build\\bin\\unittest.exe",
+            "program": "${workspaceFolder}\\build\\clang\\debug\\bin\\unittest.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}\\build\\bin",
+            "cwd": "${workspaceFolder}\\build\\clang\\debug\\bin",
             "environment": [],
             "console": "integratedTerminal"
         },
         {
-            "name": "Spectest_debug(win)",
+            "name": "Spectest(win)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\build\\bin\\harness.exe",
-            "args": ["-v", "-j", "D:\\Dev\\Silverfir\\build\\spectest\\binary-leb128.json",
-                 "-d", "D:\\Dev\\Silverfir\\build\\spectest\\"],
+            "program": "${workspaceFolder}\\build\\clang\\debug\\bin\\harness.exe",
+            "args": ["-v", "-j", "D:\\Dev\\Silverfir\\build\\clang\\debug\\spectest\\binary-leb128.json",
+                 "-d", "D:\\Dev\\Silverfir\\build\\clang\\debug\\spectest\\"],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}\\build\\bin",
+            "cwd": "${workspaceFolder}\\build\\clang\\debug\\bin",
             "environment": [],
             "console": "integratedTerminal"
         },
@@ -29,10 +29,10 @@
             "name": "sf_loader btree(win)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\build_clang\\bin\\sf_loader.exe",
-            "args": ["${workspaceFolder}\\build\\binary-trees.wasm", "12"],
+            "program": "${workspaceFolder}\\build\\clang\\debug\\bin\\sf_loader.exe",
+            "args": ["${workspaceFolder}\\build\\clang\\debug\\binary-trees.wasm", "12"],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}\\build\\bin",
+            "cwd": "${workspaceFolder}\\build\\clang\\debug\\bin",
             "environment": [],
             "console": "integratedTerminal"
         },
@@ -40,7 +40,7 @@
             "name": "Unittest(LLDB)",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/unittest",
+            "program": "${workspaceFolder}/build/clang/debug/bin/unittest",
             "cwd": "${workspaceRoot}/build/bin",
             "valuesFormatting": "parseText"
         },
@@ -48,10 +48,10 @@
             "name": "Spectest(LLDB)",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/build_clang/bin/harness",
-            "args": ["-v", "-j", "${workspaceFolder}/build_clang/spectest/block.json",
-                 "-d", "${workspaceFolder}/build_clang/spectest"],
-            "cwd": "${workspaceFolder}/build_clang/bin",
+            "program": "${workspaceFolder}/build/clang/debug/bin/harness",
+            "args": ["-v", "-j", "${workspaceFolder}/build/clang/debug/spectest/block.json",
+                 "-d", "${workspaceFolder}/build/clang/debug/spectest"],
+            "cwd": "${workspaceFolder}/build/clang/debug/bin",
             "console": "integratedTerminal"
         },
         {

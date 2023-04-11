@@ -784,8 +784,8 @@ OP(i32_trunc_f64_u) {
     NEXT_OP();
 }
 
-CONVERT_OP(i64_extend_i32_s, i64, s_extend32, i32)
-CONVERT_OP(i64_extend_i32_u, i64, s_extend32u, i32)
+CONVERT_OP(i64_extend_i32_s, i64, s_as_i32, i32)
+CONVERT_OP(i64_extend_i32_u, i64, s_as_i32u, i32)
 
 OP(i64_trunc_f32_s) {
     READ_NEXT_OP();
@@ -837,11 +837,11 @@ REINTERPRET_OP(i32_reinterpret_f32, i32, f32)
 REINTERPRET_OP(i64_reinterpret_f64, i64, f64)
 REINTERPRET_OP(f32_reinterpret_i32, f32, i32)
 REINTERPRET_OP(f64_reinterpret_i64, f64, i64)
-CONVERT_OP(i32_extend8_s, i32, s_extend8, i32)
-CONVERT_OP(i32_extend16_s, i32, s_extend16, i32)
-CONVERT_OP(i64_extend8_s, i64, s_extend8, i32)
-CONVERT_OP(i64_extend16_s, i64, s_extend16, i32)
-CONVERT_OP(i64_extend32_s, i64, s_extend32, i64)
+CONVERT_OP(i32_extend8_s, i32, s_as_i8, i32)
+CONVERT_OP(i32_extend16_s, i32, s_as_i16, i32)
+CONVERT_OP(i64_extend8_s, i64, s_as_i8, i32)
+CONVERT_OP(i64_extend16_s, i64, s_as_i16, i32)
+CONVERT_OP(i64_extend32_s, i64, s_as_i32, i64)
 
 OP(ref_null) {
     stream_seek_unchecked(pc, 1);

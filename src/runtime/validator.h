@@ -44,7 +44,6 @@ typedef struct ctrl_frame {
     vec_u32 pending_jt_slots;
     u32 pc;
 } ctrl_frame;
-VEC_DECL_FOR_TYPE(ctrl_frame)
 RESULT_TYPE_DECL(ctrl_frame)
 
 r validate_func(module * mod, func * f);

@@ -23,7 +23,7 @@
 
 // This file is not supposed to be used as a general header. Instead,
 // It should be included only in the custom vector type implementation sources.
-// Common vector types has been instantiated in the vec_impl.c
+// Common vector types has been instantiated in the containers_impl.c
 // You need to create your own custom_vec.c and include this header.
 // See the unit tests for more info.
 

@@ -26,6 +26,7 @@
 #define LOGI(fmt, ...) LOG_INFO(log_channel_validator, fmt, __VA_ARGS__)
 #define LOGW(fmt, ...) LOG_WARNING(log_channel_validator, fmt, __VA_ARGS__)
 
+VEC_DECL_FOR_TYPE(ctrl_frame)
 VEC_IMPL_FOR_TYPE(ctrl_frame)
 
 typedef struct validator_context {

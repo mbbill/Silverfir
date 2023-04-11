@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// list_impl.h is a bit special.
+// Please refer to the vec_impl.h for more information.
+
 #pragma once
 
 #include "alloc.h"

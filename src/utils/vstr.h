@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// A vactor based string.
+// A vector based string.
 // The string can have three different states:
 // - stored in a static buffer.
 // - stored in heap (vector)
