@@ -1,41 +1,42 @@
-## The Jump Table
+# Interpreter: Jump Table Optimization
 
-The jump table is one of the tricks that makes the in-place interpreter fast. If we look at all the control instructions, there are only a few of them that might change the following instruction follow. They are:
+The jump table is a technique that significantly improves the performance of the in-place interpreter. Among all control instructions, only a few can change the following instruction. They are:
 
-- `if` If the stack top is zero, jump to either the `else` block or the instruction after `end`.
-- `else` Always jump to the instruction after the `end` of the `if-else-end` block.
-- `br/br_if/br_table` Jump to the the target location of one of the labels in stack, with or without condition. The target is the instruction after the `end` for `block` and `if`, and for `loop` it's the instruction at or after the `loop`.
+- `if`: If the stack top is zero, jump to either the `else` block or the instruction after `end`.
+- `else`: Always jump to the instruction after the `end` of the `if-else-end` block.
+- `br/br_if/br_table`: Jump to the target location of one of the labels in the stack, with or without a condition. The target is the instruction after the `end` for `block` and `if`, and for `loop`, it's the instruction at or after the `loop`.
 
-A typical interpreter will build a label stack with target locations. Executing the jump instructions is as simple as a label stack search, and then jump to the corresponding location as below pseudo code shows.
+A typical interpreter will build a label stack with target locations. Executing jump instructions involves a label stack search, followed by jumping to the corresponding location, as shown in the pseudocode below.
 
-- Preparation pass: (Usually it is done during the validation pass)
-  - Build a side-table with following algorithm:
-  - On `block` instructions, push a label frame.
-    - If the `block` is a `loop`, set the label frame target to the `loop` itself, otherwise leave the target empty.
-  - On `end` instructions, update the belonging label frame's target.
-  - `if` and `else` needs a bit of special treats but the idea is the same.
+- Preparation pass (usually done during the validation pass):
+  - Build a side-table using the following algorithm:
+    - On `block` instructions, push a label frame.
+      - If the `block` is a `loop`, set the label frame target to the `loop` itself; otherwise, leave the target empty.
+    - On `end` instructions, update the belonging label frame's target.
+    - `if` and `else` require special treatment, but the idea is the same.
 - During execution:
   - On `block` instructions, push a label frame.
-  - On `br` instructions, find the target label frame, then find the side table item for that frame. With the side table, we know where is the jump target, then jump to that location.
-  - `if` and `else` also needs a bit of special treatment.
+  - On `br` instructions, find the target label frame and the side-table item for that frame. Using the side-table, we can locate the jump target and then jump to that location.
+  - `if` and `else` also require special treatment.
 
-It works, but still not fast. There are two reasons that make things slow:
+This approach works but is not fast enough. There are three main reasons for its slow performance:
 
-- Having to push and pop label frames to the stack is slow.
-- Side table lookup is slow because even with a hash table the overhead is still too big for such a high frequency considering the `block` is one of the hottest instructions.
-- Not to mention the side table is quite big.
+1. Pushing and popping label frames to the stack is slow.
+2. Side-table lookup is slow because even with a hash table, the overhead is too large for such high frequency, considering that `block` is one of the hottest instructions.
+3. The side-table is quite large.
 
-So I thought about the issue for quite a while, and I believed that since we're paying the memory cost of a side-table, we should really have a way to entirely get rid of the runtime cost of the label stack construction and table lookup. The goal is to eliminate the above mentioned two downsides, which means
+To address these issues, I devised a solution that eliminates the runtime cost of label stack construction and table lookup while maintaining the memory cost of a side-table. The goal is to:
 
-- No need for label frames, therefore the `block` and `loop` instructions will eventually become no-op.
-- No need for side-table lookup. The next slot location should be pre-calculated and stored in the table.
+- Remove the need for label frames, making `block` and `loop` instructions effectively no-ops.
+- Eliminate the need for side-table lookup. The next slot location should be pre-calculated and stored in the table.
 
-Turns out it is possible.
+The solution is as follows.
 
-Let's again take a look at the instructions that may potentially change the execution flow.
+First, let's examine the instructions that may potentially change the execution flow.
 
-- The `if` instruction. There are two potential outcomes after executing the instruction, depends on the stack top value. If the stack top is zero, then the jump target should be either into the `else` block, if exist, or to the `end`. So when the interpreter run into an `if`, it needs the side table to tell it where's the jump location if condition is false. Therefore, during the preparation pass, we have to create a slot for the `if` and when we hit either `else` or the `end` we can update the slot with the correct jump offset.
-- The `br` instruction. The `br` instruction always jump to a target label frame. When we run into a `br`, we don't know where the target is yet, until we hit the target frame's `end`. If we leave the target location of the `br` jump table slot empty, when we eventually hit the `end`, how do we know which `br` slot in the jump table we need to be updated? The way I used is to add a label frame vector member to record all of the `br` that jumps into the end of the label. Let's take below as an example:
+- The `if` instruction: There are two potential outcomes after executing the instruction, depending on the stack top value. If the stack top is zero, the jump target should be either the `else` block, if it exists, or to the `end`. When the interpreter encounters an `if`, the side table must provide the jump location if the condition is false. During the preparation pass, we must create a slot for the `if` and update the slot with the correct jump offset when we hit either `else` or the `end`.
+- The `br` instruction: The `br` instruction always jumps to a target label frame. When we encounter a `br`, we don't know the target's location until we hit the target frame's `end`. We can leave the target location of the `br` jump table slot empty, and when we eventually hit the `end`, we can update the `br` slot in the jump table by adding a label frame vector member to record all the `br` instructions that jump to the end of the label. This is illustrated in the example below:
+
 ```
 block <-- This label has 3 pending br recorded.
   block
@@ -47,11 +48,13 @@ block <-- This label has 3 pending br recorded.
   br 0
 end <-- Ok now we're closing the block, so we update all of the pending brs' target to here.
 ```
-Since all `br` instructs should be attached to one of the label frames in the label stack, when we finish validating a function and pop up all the labels, we know all the `br`s are updated with their target offset.
 
-Now let's face the second question, how can we get rid of the table lookup? The question eventually becomes: how can we know the next lookup item's index without searching the table?
+Since all `br` instructions should be attached to one of the label frames in the label stack, when we finish validating a function and pop up all the labels, we know all the `br`s are updated with their target offset.
 
-As we know, `br` will take us to a new location, and then we continue read the instructions until we hit the next `br`. (well I'll only use the `br` as an example but other jump instructions are similar). So the next `br`'s own address must be larger than the jump target of the current `br`.
+Now, let's tackle the second question: how can we get rid of the table lookup? We need to determine the next lookup item's index without searching the table.
+
+We know that `br` will take us to a new location, and then we continue reading the instructions until we hit the next `br`. (Using `br` as an example, but other jump instructions are similar). So, the next `br`'s own address must be larger than the jump target of the current `br`.
+
 ```
 1: block
 2:  block
@@ -61,9 +64,10 @@ As we know, `br` will take us to a new location, and then we continue read the i
 6:  br 0
 7:end
 ```
-So there *is* a way to know which `br` will be the next. We can simply search the opcode from the target location, and the first `br` will be the next one.
 
-During execution we can have a "next br index" variable pointing to the next possible branch instruction index in the jump table. When we hit a branch instruction, we can update the "next br index" so that next time we can use that index to directly access the slot without any lookup.
+We *can* determine the next `br`. Simply search the opcode from the target location, and the first `br` will be the next one.
+
+During execution, we can have a "next br index" variable pointing to the next possible branch instruction index in the jump table. When we hit a branch instruction, we can update the "next br index" so that next time we can use that index to directly access the slot without any lookup.
 
 Below is an example of how the jump table looks like:
 
@@ -110,14 +114,17 @@ Jump table:
 [4] PC:00012B  TGT:000106  Arity:0   StackOffset:0   Next:0
 ```
 
-At the beginning, the "next index" is zero. So when we hit a branch for the first time, we have:
+At the beginning, the "next index" is zero. So, when we hit a branch for the first time, we have:
 
-`[0] PC:000113  TGT:000117  Arity:0   StackOffset:0   Next:2`
+```[0] PC:000113 TGT:000117 Arity:0 StackOffset:0 Next:2```
 
-It means:
+This means:
+
 - The jump target is 0x117.
-  - If jump, then the next instruction is 0x117. The next slot index is 2.
-  - If not jump, the next slot index will be `current + 1`, which is 1.
-- The arity and StackOffset is used to shift the value stack.
-  - It's similar to returning from a function or a label: we move "arity" number of stack items backward at "StackOffset" number of distance.
-- The "Next" index is the possible next jump table slot.
+  - If the jump is taken, the next instruction is 0x117. The next slot index is 2.
+  - If the jump is not taken, the next slot index will be `current + 1`, which is 1.
+- The arity and StackOffset are used to shift the value stack.
+  - This is similar to returning from a function or a label: we move "arity" number of stack items backward at "StackOffset" number of distance.
+  - The "Next" index is the possible next jump table slot.
+
+By implementing the jump table this way, we can eliminate the need for label frames, making `block` and `loop` instructions no-op. We also avoid the need for side-table lookups, as the next slot location is pre-calculated and stored in the table. This results in a more efficient interpreter that can execute WebAssembly code faster.
