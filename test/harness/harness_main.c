@@ -32,6 +32,7 @@
 #define LOGW(fmt, ...) LOG_WARNING(log_channel_test, fmt, __VA_ARGS__)
 
 int json_runner(const char * json_fname, const char * dir, bool verbose) {
+    int ret = 0;
     assert(json_fname);
 
     log_channel_set_enabled(log_info, log_channel_test, true);
@@ -50,32 +51,38 @@ int json_runner(const char * json_fname, const char * dir, bool verbose) {
         module_dir = s_p(dir);
     }
 
-    FILE * fp = 0;
-    char * json_buf = 0;
-    json_value json = {0};
-    int ret = 0;
-
-    fp = fopen(json_fname, "r");
+    FILE * fp = fopen(json_fname, "r");
     if (!fp) {
         LOGW("Cannot open %s", json_fname);
-        goto err;
+        ret = 1;
+        return ret;
     }
+
     fseek(fp, 0, SEEK_END);
     size_t fsize = ftell(fp);
     if (!fsize) {
         LOGW("File is empty!");
-        goto err;
+        ret = 1;
+        fclose(fp);
+        return ret;
     }
     rewind(fp);
-    json_buf = malloc(fsize);
+
+    char * json_buf = malloc(fsize);
     if (!json_buf) {
         LOGW("Failed to allocate JSON file buffer");
-        goto err;
+        ret = 1;
+        fclose(fp);
+        return ret;
     }
+
     size_t read_size = fread(json_buf, 1, fsize, fp);
     if (read_size != fsize) {
         LOGW("Failed to read the JSON file");
-        goto err;
+        ret = 1;
+        fclose(fp);
+        free(json_buf);
+        return ret;
     }
 
     // parse the spec test format based on
@@ -83,25 +90,21 @@ int json_runner(const char * json_fname, const char * dir, bool verbose) {
     r_json_value rj = json_parse(str_from((str_iter_t)json_buf, read_size));
     if (!is_ok(rj)) {
         LOGW("Failed to parse the JSON file");
-        goto err;
+        ret = 1;
+        fclose(fp);
+        free(json_buf);
+        return ret;
     }
-    json = rj.value;
+
+    json_value json = rj.value;
     r result = do_spec_test(json, module_dir, verbose);
     if (!is_ok(result)) {
         LOGW("Error msg: %s", result.msg);
-        goto err;
+        ret = 1;
     }
-    goto end;
 
-err:
-    ret = 1;
-end:
-    if (fp) {
-        fclose(fp);
-    }
-    if (json_buf) {
-        free(json_buf);
-    }
+    fclose(fp);
+    free(json_buf);
     json_free_value(&json);
     return ret;
 }
@@ -118,8 +121,8 @@ int print_help(const char * exec_name) {
         base_name = exec_name;
     }
     printf("Usage:\n");
-    printf("    %s -j <json> [-d folder] [-v]\n", base_name);
-    printf("    %s -h\n\n", base_name);
+    printf(" %s -j <json> [-d folder] [-v]\n", base_name);
+    printf(" %s -h\n\n", base_name);
     return 1;
 }
 
@@ -135,7 +138,6 @@ int main(int argc, char * argv[]) {
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
     _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
 #endif
-
     const char * folder_name = NULL;
     const char * json_name = NULL;
     bool verbose = false;
@@ -145,39 +147,32 @@ int main(int argc, char * argv[]) {
     }
 
     for (int i = 1; i < argc; i++) {
-        if (strlen(argv[i]) < 2) {
-            return print_help(argv[0]);
-        }
-        if (argv[i][0] == '-') {
+        if (argv[i][0] == '-' && strlen(argv[i]) >= 2) {
             switch (argv[i][1]) {
-                case 'd': {
+                case 'd':
                     if (i + 1 >= argc) {
                         return print_help(argv[0]);
                     }
-                    folder_name = argv[i + 1];
-                    i++;
+                    folder_name = argv[++i];
                     break;
-                }
-                case 'j': {
+                case 'j':
                     if (i + 1 >= argc) {
                         return print_help(argv[0]);
                     }
-                    json_name = argv[i + 1];
-                    i++;
+                    json_name = argv[++i];
                     break;
-                }
-                case 'v': {
+                case 'v':
                     verbose = true;
                     break;
-                }
-                default: {
+                case 'h':
+                default:
                     return print_help(argv[0]);
-                }
             }
         } else {
             return print_help(argv[0]);
         }
     }
+
     if (!json_name) {
         return print_help(argv[0]);
     }
