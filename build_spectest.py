@@ -29,11 +29,20 @@ def process_spec_tests(spec_test_dir, output_dir):
     spec_test_dir = Path(spec_test_dir)
     output_dir = Path(output_dir)
 
-    for test_file in spec_test_dir.glob("*.wast"):
+    wast_files = list(spec_test_dir.glob("*.wast"))
+
+    if not wast_files:
+        print("Error: No '.wast' files found in the specified directory.")
+        print("       Make sure to download the spec tests by updating the submodule with:")
+        print("           $git submodule init")
+        print("           $git submodule update")
+        sys.exit(1)
+
+    for test_file in wast_files:
         print(f"Processing: {test_file.name}")
         raw_test_file_path = r'{}'.format(test_file)
-        print(raw_test_file_path)
-        returncode = subprocess.call(["wast2json", raw_test_file_path], stderr=subprocess.PIPE)
+        output_file = output_dir / f"{test_file.stem}.json"
+        returncode = subprocess.call(["wast2json", "-o", str(output_file), raw_test_file_path])
 
         if returncode != 0:
             print(f"Error: Failed to process '{test_file}'")
@@ -41,12 +50,10 @@ def process_spec_tests(spec_test_dir, output_dir):
 
     print(f"All spec tests have been successfully processed and saved to '{output_dir}'.")
 
-
 def main():
     project_root = Path.cwd()
     spec_test_dir = project_root / "test" / "testsuite"
     output_dir = project_root / "build" / "testsuite"
-
     check_project_root(project_root, spec_test_dir)
     check_wast2json()
     create_output_dir(output_dir)
