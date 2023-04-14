@@ -54,7 +54,7 @@ static uvwasi_preopen_t g_preopens = {
     .real_path = ".",
 };
 
-wasi_ctx * wasi_ctx_get() {
+wasi_ctx * wasi_ctx_get(void) {
     wasi_ctx * ctx = array_calloc(wasi_ctx, 1);
     uvwasi_options_t init_options;
     uvwasi_options_init(&init_options);

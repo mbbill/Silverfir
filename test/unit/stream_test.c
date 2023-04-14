@@ -21,8 +21,8 @@
 #include <cmocka.h>
 #include <cmocka_private.h>
 
-#define LOGI(fmt, ...) LOG_INFO(log_channel_test, fmt, __VA_ARGS__)
-#define LOGW(fmt, ...) LOG_WARNING(log_channel_test, fmt, __VA_ARGS__)
+#define LOGI(fmt, ...) LOG_INFO(log_channel_test, fmt, ##__VA_ARGS__)
+#define LOGW(fmt, ...) LOG_WARNING(log_channel_test, fmt, ##__VA_ARGS__)
 
 #if defined(NDEBUG)
     #define ENABLE_LEB128_PERFTEST

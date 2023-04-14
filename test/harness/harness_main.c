@@ -28,8 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LOGI(fmt, ...) LOG_INFO(log_channel_test, fmt, __VA_ARGS__)
-#define LOGW(fmt, ...) LOG_WARNING(log_channel_test, fmt, __VA_ARGS__)
+#define LOGI(fmt, ...) LOG_INFO(log_channel_test, fmt, ##__VA_ARGS__)
+#define LOGW(fmt, ...) LOG_WARNING(log_channel_test, fmt, ##__VA_ARGS__)
 
 int json_runner(const char * json_fname, const char * dir, bool verbose) {
     int ret = 0;

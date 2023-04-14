@@ -27,8 +27,8 @@
 
 #if SILVERFIR_INTERP_INPLACE_DT
 
-#define LOGI(fmt, ...) LOG_INFO(log_channel_in_place_dt, fmt, __VA_ARGS__)
-#define LOGW(fmt, ...) LOG_WARNING(log_channel_in_place_dt, fmt, __VA_ARGS__)
+#define LOGI(fmt, ...) LOG_INFO(log_channel_in_place_dt, fmt, ##__VA_ARGS__)
+#define LOGW(fmt, ...) LOG_WARNING(log_channel_in_place_dt, fmt, ##__VA_ARGS__)
 
 r in_place_dt_call(thread * t, func_addr f_addr, value_u * args) {
     assert(f_addr);

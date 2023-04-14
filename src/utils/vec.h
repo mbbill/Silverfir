@@ -80,7 +80,7 @@ extern void vec_undefined(int, ...);
 #endif
 
 #define VEC_IS_VALID_DECL(type, _)                                                                                                     \
-    inline bool vec_is_valid_##type(vec_##type * v) {                                                                                  \
+    INLINE bool vec_is_valid_##type(vec_##type * v) {                                                                                  \
         assert(v);                                                                                                                     \
         return ((v)->_data) ? (((v)->_capacity > 0) && ((v)->_capacity >= (v)->_size)) : (((v)->_capacity == 0) && ((v)->_size == 0)); \
     }

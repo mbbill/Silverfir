@@ -22,7 +22,7 @@ typedef struct wasi_ctx {
     uvwasi_t uvwasi;
 } wasi_ctx;
 
-wasi_ctx * wasi_ctx_get();
+wasi_ctx * wasi_ctx_get(void);
 
 void wasi_ctx_drop(void *);
 

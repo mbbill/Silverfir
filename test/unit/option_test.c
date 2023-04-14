@@ -20,11 +20,11 @@
 #include <cmocka.h>
 #include <cmocka_private.h>
 
-option_u32 get_none() {
+option_u32 get_none(void) {
     return none(option_u32);
 }
 
-option_u32 get_some() {
+option_u32 get_some(void) {
     return some(option_u32, 123);
 }
 

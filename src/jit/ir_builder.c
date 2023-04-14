@@ -23,8 +23,8 @@
 #include "vm.h"
 #include "wasm_format.h"
 
-#define LOGI(fmt, ...) LOG_INFO(log_channel_ir_builder, fmt, __VA_ARGS__)
-#define LOGW(fmt, ...) LOG_WARNING(log_channel_ir_builder, fmt, __VA_ARGS__)
+#define LOGI(fmt, ...) LOG_INFO(log_channel_ir_builder, fmt, ##__VA_ARGS__)
+#define LOGW(fmt, ...) LOG_WARNING(log_channel_ir_builder, fmt, ##__VA_ARGS__)
 
 typedef struct local_lifespan_context {
     module * mod;

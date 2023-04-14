@@ -41,7 +41,7 @@
     extern const size_t name##_tests_count;
 FOR_EACH_UNIT_TEST_GROUP(EXTERN_TEST_GROUP_DECL)
 
-int main() {
+int main(void) {
 #if defined(_MSC_VER)
     int flag = _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF; // | _CRTDBG_DELAY_FREE_MEM_DF; this is a bit too slow.
     flag = (flag & 0x0000FFFF) | _CRTDBG_CHECK_EVERY_16_DF;

@@ -20,6 +20,8 @@
     #include "gcc_clang.h"
 #elif defined(_MSC_VER)
     #include "msvc.h"
+#else
+    #error "Unsupported compiler!"
 #endif
 
 #if !defined(likely)
@@ -42,7 +44,7 @@
 
 #define array_len(array) (sizeof(array) / sizeof(array[0]))
 
-INLINE int is_little_endian() {
+INLINE int is_little_endian(void) {
     int test = 1;
     return ((char *)(&test))[0] == 1;
 }

@@ -53,11 +53,11 @@ void log_channel_set_enabled(log_level level, log_channel channel, bool enabled)
 #define LOG_INFO(channel, fmt, ...)
 #else
 #define LOG_INFO_ENABLED
-#define LOG_INFO(channel, fmt, ...) log_with_level(log_info, channel, fmt, __VA_ARGS__)
+#define LOG_INFO(channel, fmt, ...) log_with_level(log_info, channel, fmt, ##__VA_ARGS__)
 #endif
 
 // Warning logs are always enabled.
-#define LOG_WARNING(channel, fmt, ...) log_with_level(log_warning, channel, fmt, __VA_ARGS__)
+#define LOG_WARNING(channel, fmt, ...) log_with_level(log_warning, channel, fmt, ##__VA_ARGS__)
 
 // There is no LOG_ERROR because errors should be properly returned and handled.
 

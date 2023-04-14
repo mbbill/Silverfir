@@ -20,11 +20,12 @@
 #include "op_decoder.h"
 #include "opcode.h"
 #include "parser.h"
+#include "result.h"
 #include "stream.h"
 #include "vec_impl.h"
 
-#define LOGI(fmt, ...) LOG_INFO(log_channel_validator, fmt, __VA_ARGS__)
-#define LOGW(fmt, ...) LOG_WARNING(log_channel_validator, fmt, __VA_ARGS__)
+#define LOGI(fmt, ...) LOG_INFO(log_channel_validator, fmt, ##__VA_ARGS__)
+#define LOGW(fmt, ...) LOG_WARNING(log_channel_validator, fmt, ##__VA_ARGS__)
 
 VEC_DECL_FOR_TYPE(ctrl_frame)
 VEC_IMPL_FOR_TYPE(ctrl_frame)
@@ -776,10 +777,11 @@ static r validator_on_iunop(void * payload, wasm_opcode opcode, stream imm) {
         case op_i64_ctz:
         case op_i64_popcnt:
             POP1_PUSH(i64, i64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -807,10 +809,11 @@ static r validator_on_irelop(void * payload, wasm_opcode opcode, stream imm) {
         case op_i64_ge_s:
         case op_i64_ge_u:
             POP2_PUSH(i64, i32);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -848,10 +851,11 @@ static r validator_on_ibinop(void * payload, wasm_opcode opcode, stream imm) {
         case op_i64_rotl:
         case op_i64_rotr:
             POP2_PUSH(i64, i64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -873,10 +877,11 @@ static r validator_on_funop(void * payload, wasm_opcode opcode, stream imm) {
         case op_f64_nearest:
         case op_f64_sqrt:
             POP1_PUSH(f64, f64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -896,10 +901,11 @@ static r validator_on_frelop(void * payload, wasm_opcode opcode, stream imm) {
         case op_f64_le:
         case op_f64_ge:
             POP2_PUSH(f64, i32);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -921,10 +927,11 @@ static r validator_on_fbinop(void * payload, wasm_opcode opcode, stream imm) {
         case op_f64_max:
         case op_f64_copysign:
             POP2_PUSH(f64, f64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -947,10 +954,11 @@ static r validator_on_truncop(void * payload, wasm_opcode opcode, stream imm) {
         case op_i64_trunc_f64_s:
         case op_i64_trunc_f64_u:
             POP1_PUSH(f64, i64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -968,10 +976,11 @@ static r validator_on_convertop(void * payload, wasm_opcode opcode, stream imm) 
         case op_f64_convert_i64_s:
         case op_f64_convert_i64_u:
             POP1_PUSH(i64, f64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -981,10 +990,11 @@ static r validator_on_rankop(void * payload, wasm_opcode opcode, stream imm) {
             POP1_PUSH(f64, f32);
         case op_f64_promote_f32:
             POP1_PUSH(f32, f64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -998,10 +1008,11 @@ static r validator_on_reinterpretop(void * payload, wasm_opcode opcode, stream i
             POP1_PUSH(i32, f32);
         case op_f64_reinterpret_i64:
             POP1_PUSH(i64, f64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -1017,10 +1028,11 @@ static r validator_on_extendop(void * payload, wasm_opcode opcode, stream imm) {
         case op_i64_extend16_s:
         case op_i64_extend32_s:
             POP1_PUSH(i64, i64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 
@@ -1075,10 +1087,11 @@ static r validator_on_trunc_sat(void * payload, wasm_opcode_fc opcode, stream im
         case op_i64_trunc_sat_f64_s:
         case op_i64_trunc_sat_f64_u:
             POP1_PUSH(f64, i64);
-        default:
+        default: {
             check_prep(r);
             assert(false);
             return err(e_general, "Should not happen");
+        }
     }
 }
 

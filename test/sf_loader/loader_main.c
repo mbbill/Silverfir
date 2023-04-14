@@ -29,8 +29,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define LOGI(fmt, ...) LOG_INFO(log_channel_test, fmt, __VA_ARGS__)
-#define LOGW(fmt, ...) LOG_WARNING(log_channel_test, fmt, __VA_ARGS__)
+#define LOGI(fmt, ...) LOG_INFO(log_channel_test, fmt, ##__VA_ARGS__)
+#define LOGW(fmt, ...) LOG_WARNING(log_channel_test, fmt, ##__VA_ARGS__)
 
 r run_module(u8 * wasm_mem, size_t size) {
     assert(wasm_mem);
