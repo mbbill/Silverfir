@@ -222,6 +222,7 @@ static u16 get_reg(ir_builder_context * ctx, reg_type type, stream imm) {
                     stack_val->u.local_idx = INVALID_IDX_U16;
                 }
             }
+            UNUSED(found_count);
             assert(found_count == local_val->alias_count);
             LOGI("[emit] r%" PRIu32 " --> local[%" PRIu32 "]", (u32)i, (u32)(reg->tgt_idx));
             local_val->reg_idx = INVALID_IDX_U16;
