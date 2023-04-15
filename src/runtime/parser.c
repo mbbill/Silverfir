@@ -654,7 +654,7 @@ r parse_section_data(module * mod, stream st) {
     vec_set_fixed(&mod->data, true);
 
     for (u32 i = 0; i < count; i++) {
-        unwrap(u8, data_kind, stream_read_u8(&st));
+        unwrap(u32, data_kind, stream_read_vu32(&st));
         if (data_kind > 2) {
             return err(e_malformed, "Invalid data kind");
         }
