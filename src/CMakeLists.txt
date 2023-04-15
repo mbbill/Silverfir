@@ -38,6 +38,14 @@ if (CMAKE_C_COMPILER_ID MATCHES "AppleClang|Clang|GNU")
             target_link_options(build_flags INTERFACE -Wl,-stack_size -Wl,0x1000000)
         endif()
     endif()
+
+    # Enable stack sanitizer for RelWithDebInfo build
+    if (CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+        if (CMAKE_C_COMPILER_ID MATCHES "AppleClang|Clang")
+            target_compile_options(build_flags INTERFACE -fsanitize=address -fno-omit-frame-pointer)
+            target_link_options(build_flags INTERFACE -fsanitize=address)
+        endif()
+    endif()
 endif()
 
 # spectest
