@@ -547,10 +547,14 @@ static void test_s_truncf32u(void **state) {
     assert_int_equal(s_truncf32u(10.4f), 10);
     assert_int_equal(s_truncf32u(0.5f), 0);
     assert_int_equal(s_truncf32u(0.4f), 0);
-    assert_int_equal(s_truncf32u(-10.5f), (u64)(0xfffffffffffffff6));
-    assert_int_equal(s_truncf32u(-10.4f), (u64)(0xfffffffffffffff6));
-    assert_int_equal(s_truncf32u(-0.5f), 0);
-    assert_int_equal(s_truncf32u(-0.4f), 0);
+    // The behavior of casting a negative floating-point number to an
+    // unsigned integer is not well-defined according to the C standard.
+    // It means that the result might be different between compilers or
+    // even different versions of the same compiler.
+    // assert_int_equal(s_truncf32u(-10.5f), (u64)(0xfffffffffffffff6));
+    // assert_int_equal(s_truncf32u(-10.4f), (u64)(0xfffffffffffffff6));
+    // assert_int_equal(s_truncf32u(-0.5f), 0);
+    // assert_int_equal(s_truncf32u(-0.4f), 0);
 }
 
 static void test_s_truncf64u(void **state) {
@@ -558,10 +562,10 @@ static void test_s_truncf64u(void **state) {
     assert_int_equal(s_truncf64u(10.4), 10);
     assert_int_equal(s_truncf64u(0.5), 0);
     assert_int_equal(s_truncf64u(0.4), 0);
-    assert_int_equal(s_truncf64u(-10.5), 18446744073709551606u);
-    assert_int_equal(s_truncf64u(-10.4), 18446744073709551606u);
-    assert_int_equal(s_truncf64u(-0.5), 0);
-    assert_int_equal(s_truncf64u(-0.4), 0);
+    // assert_int_equal(s_truncf64u(-10.5), 18446744073709551606u);
+    // assert_int_equal(s_truncf64u(-10.4), 18446744073709551606u);
+    // assert_int_equal(s_truncf64u(-0.5), 0);
+    // assert_int_equal(s_truncf64u(-0.4), 0);
 }
 
 void test_s_clz32(void **state) {
