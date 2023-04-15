@@ -31,6 +31,7 @@
 #endif
 
 // Enable the direct-threading or the traditional switch-case based in-place interpreter
+// Disable this option to fallback to TCO interpreter.
 #if !defined(SILVERFIR_INTERP_INPLACE_DT)
     #define SILVERFIR_INTERP_INPLACE_DT 1
 #endif

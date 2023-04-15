@@ -244,7 +244,7 @@ r in_place_dt_call(thread * t, func_addr f_addr, value_u * args) {
                     // We can't use alloca here because it's function scope, otherwise a loop calling
                     // to here will lead to stack overflow.
                     callee_local = array_alloc(value_u, callee_fn->local_count);
-                    if (!stack_base) {
+                    if (!callee_local) {
                         return err(e_general, "Stack overflow!");
                     }
                     memcpy(callee_local, sp, callee_type.param_count * sizeof (value_u));

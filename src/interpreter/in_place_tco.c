@@ -344,19 +344,35 @@ OP(call_indirect) {
     assert(sp - ctx->stack_base >= callee_type.param_count);
     sp -= callee_type.param_count;
     r ret;
+    // To fix a stack overflow. See in_place_dt for more information.
+    value_u * callee_local = NULL;
+    if (callee_fn->local_count - callee_type.param_count) {
+        // We can't use alloca here because it's function scope, otherwise a loop calling
+        // to here will lead to stack overflow.
+        callee_local = array_alloc(value_u, callee_fn->local_count);
+        if (!callee_local) {
+            return "Stack overflow!";
+        }
+        memcpy(callee_local, sp, callee_type.param_count * sizeof(value_u));
+    }
     if (unlikely(callee_fn->tr)) {
         // native call, we're passing in the caller's context.
         ret = (callee_fn->tr((tr_ctx){
                                  .f_addr = callee_addr,
-                                 .args = sp,
+                                 .args = callee_local != NULL ? callee_local : sp,
                                  .mem0 = ctx->mem_inst0,
                              },
                              callee_fn->host_func));
     } else {
-        ret = (in_place_tco_call(ctx->t, callee_addr, sp));
+        ret = (in_place_tco_call(ctx->t, callee_addr, callee_local != NULL ? callee_local : sp));
     }
     if (!is_ok(ret)) {
         return ret.msg;
+    }
+    if (callee_local) {
+        // copy stack back
+        memcpy(sp, callee_local, callee_type.result_count * sizeof(value_u));
+        array_free(callee_local);
     }
     sp += callee_type.result_count;
     NEXT_OP_TAIL();
