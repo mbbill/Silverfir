@@ -501,6 +501,12 @@ static r validator_on_call_indirect(void * payload, stream imm, u32 type_idx, u3
         vec_clear_type_id(&param_types);
     });
     vec_clear_type_id(&param_types);
+
+    // Caution, we can't potential maximum stack size here because we don't know
+    // the callee's local counts. So, in order to make sure the stack is enough,
+    // we have some special trick to handle this situation. See in_place_dt.c
+    // call_indirect implementation for more information.
+
     // push results
     unwrap(vec_type_id, result_types, parse_types(ft->result_count, ft->results));
     check(push_vals(&result_types, ctx), {

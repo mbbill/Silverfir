@@ -191,6 +191,8 @@ r in_place_dt_call(thread * t, func_addr f_addr, value_u * args) {
                 func_type callee_type = callee_fn->fn_type;
                 assert(sp - stack_base >= callee_type.param_count);
                 sp -= callee_type.param_count;
+                // Just double check to make sure the stack is enough to hold the callee's all local variables
+                assert(sp - stack_base + callee_fn->local_count <= fn->stack_size_max);
                 if (unlikely(callee_fn->tr)) {
                     // native call, we're passing in the caller's context.
                     check(callee_fn->tr((tr_ctx){
@@ -230,16 +232,38 @@ r in_place_dt_call(thread * t, func_addr f_addr, value_u * args) {
                 }
                 assert(sp - stack_base >= callee_type.param_count);
                 sp -= callee_type.param_count;
+                // Unlike statically dispatched functions where locals(including args) are allocated in
+                // the caller to make sure it's in linear memory for the callee, for dynamically dispatched
+                // functions we don't know the callee's local size, therefore can't pre-calculate the
+                // stack_size_max. So we have to allocate and copy the args for the callee here.
+                // However, it's just the 'pure' locals that needs to be allcoated, the arguments are
+                // still in our stack frame. So there's a tiny optimization when there is no 'real' locals
+                // we just pass the sp to the callee.
+                value_u * callee_local = NULL;
+                if (callee_fn->local_count - callee_type.param_count) {
+                    // We can't use alloca here because it's function scope, otherwise a loop calling
+                    // to here will lead to stack overflow.
+                    callee_local = array_alloc(value_u, callee_fn->local_count);
+                    if (!stack_base) {
+                        return err(e_general, "Stack overflow!");
+                    }
+                    memcpy(callee_local, sp, callee_type.param_count * sizeof (value_u));
+                }
                 if (unlikely(callee_fn->tr)) {
                     // native call, we're passing in the caller's context.
                     check(callee_fn->tr((tr_ctx){
                                             .f_addr = callee_addr,
-                                            .args = sp,
+                                            .args = callee_local != NULL ? callee_local : sp,
                                             .mem0 = mem_inst0,
                                         },
                                         callee_fn->host_func));
                 } else {
-                    check(in_place_dt_call(t, callee_addr, sp));
+                    check(in_place_dt_call(t, callee_addr, callee_local != NULL ? callee_local : sp));
+                }
+                if (callee_local) {
+                    // copy stack back
+                    memcpy(sp, callee_local, callee_type.result_count * sizeof (value_u));
+                    array_free(callee_local);
                 }
                 sp += callee_type.result_count;
             });
@@ -316,8 +340,8 @@ r in_place_dt_call(thread * t, func_addr f_addr, value_u * args) {
                 }
                 *vec_at_ref(&t_addr->tdata, elem_idx) = ref;
             });
-// although the spec says the popped up value is a signed i32, it should be treated
-// as unsigned. Furthormore, the size should be widened to avoid overflow.
+// Although the spec says the popped up value is a signed i32, it should be treated
+// as unsigned. Furthermore, the size should be widened to avoid overflow.
 #define MEM_LOAD(dst_type, src_type)                                                    \
     {                                                                                   \
         stream_seek_unchecked(pc, 1);                                                   \
@@ -325,7 +349,7 @@ r in_place_dt_call(thread * t, func_addr f_addr, value_u * args) {
         stream_read_vu32_unchecked(offset, pc);                                         \
         u64 mem_idx = (u64)(u32)(pop().u_i32) + offset;                                 \
         if (unlikely(mem_idx + sizeof(src_type) > vec_size_u8(pmem0))) {                \
-            return err(e_general, "t.load: out-of-bound memory access");                           \
+            return err(e_general, "t.load: out-of-bound memory access");                \
         }                                                                               \
         value_u val = {.u_##dst_type = mem_read_##src_type(vec_at_u8(pmem0, mem_idx))}; \
         push(val);                                                                      \
@@ -354,7 +378,7 @@ r in_place_dt_call(thread * t, func_addr f_addr, value_u * args) {
         value_u val = pop();                                                             \
         u64 mem_idx = (u64)(u32)(pop().u_i32) + offset;                                  \
         if (unlikely(mem_idx + sizeof(dst_type) > vec_size_u8(pmem0))) {                 \
-            return err(e_general, "t.store: out-of-bound memory access");                           \
+            return err(e_general, "t.store: out-of-bound memory access");                \
         }                                                                                \
         mem_write_##dst_type(vec_at_u8(pmem0, mem_idx), ((dst_type)(val.u_##src_type))); \
     }
