@@ -5,6 +5,7 @@ The Silverfir project aims to provide a highly efficient and memory-friendly Web
 ## Features
 
 - Memory-efficient in-place WebAssembly interpreter
+- Allows WASM binary to be in the read only memory region, suitable for embedded systems
 - Support WASI
 - Optimized for performance. Check out [Optimization details](docs/Interpreter.md) for more info.
 - Rust-style C for increased memory safety
