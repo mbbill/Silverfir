@@ -1,6 +1,6 @@
 # Interpreter: Jump Table Optimization
 
-The jump table is a technique that significantly improves the performance of the in-place interpreter. Among all control instructions, only a few can change the following instruction. They are:
+The jump table is a technique that significantly improves the performance of the in-place interpreter. Among all instructions, there is only a few of them that can potentially change the control flow. They are:
 
 - `if`: If the stack top is zero, jump to either the `else` block or the instruction after `end`.
 - `else`: Always jump to the instruction after the `end` of the `if-else-end` block.
