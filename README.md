@@ -4,6 +4,8 @@ Silverfir is a memory-efficient in-place WebAssembly (WASM) interpreter specific
 
 To further enhance the project's robustness and memory efficiency, Silverfir employs Rust-style C coding practices, which helps minimize memory errors and promote safer memory management. Moreover, the project utilizes container types instead of direct heap memory access, contributing to improved memory efficiency and overall system stability.
 
+Except for the SIMD, Silverfir passes 100% of the WASM standard spec tests.
+
 ## Features
 
 - Memory-efficient in-place WebAssembly interpreter
