@@ -30,7 +30,7 @@ __attribute__((section("test$c"))) int MarkerEnd = 0;
 #else
 #endif
 
-void test_coverage_summary() {
+void test_coverage_summary(void) {
     if (&MarkerEnd <= &MarkerStart) {
         printf("Incorrect section marker section layout\n");
         return;
@@ -57,11 +57,11 @@ void test_coverage_summary() {
 }
 
 #else
-void test_coverage_summary() {}
+void test_coverage_summary(void) {}
 #endif // TEST_COVERAGE
 
 
-// int main() {
+// int main(void) {
 //     test_coverage_summary();
 //     return 0;
 // }
