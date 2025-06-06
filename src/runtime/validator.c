@@ -1237,6 +1237,20 @@ static r validator_on_opcode_fd(void * payload, wasm_opcode_fd opcode, stream im
     return err(e_invalid, "prefix_fd opcodes is not supported yet");
 }
 
+static INLINE u16 find_next_jt_idx(vec_jump_table * jt, u32 target_pc) {
+    size_t l = 0;
+    size_t r = vec_size_jump_table(jt);
+    while (l < r) {
+        size_t m = l + ((r - l) >> 1);
+        if (vec_at_jump_table(jt, m)->pc > target_pc) {
+            r = m;
+        } else {
+            l = m + 1;
+        }
+    }
+    return (l < vec_size_jump_table(jt)) ? (u16)l : JUMP_TABLE_IDX_INVALID;
+}
+
 static r validator_on_decode_end(void * payload) {
     check_prep(r);
     validator_context * ctx = (validator_context *)payload;
@@ -1244,32 +1258,12 @@ static r validator_on_decode_end(void * payload) {
 
     LOGI("%s", "validator end");
 
-    // Link the jump table. TODO: optimize it
+    // Link the jump table using binary search for better performance
     check(vec_shrink_to_fit_jump_table(jt));
     for (u32 i = 0; i < vec_size_jump_table(jt); i++) {
         jump_table * slot = vec_at_jump_table(jt, i);
-        if (slot->target_offset > 0) {
-            for (u32 j = i + 1; j < vec_size_jump_table(jt); j++) {
-                jump_table * next_slot = vec_at_jump_table(jt, j);
-                if (next_slot->pc > (slot->pc + slot->target_offset)) {
-                    slot->next_idx = (u16)j;
-                    break;
-                } else {
-                    continue;
-                }
-            }
-            continue;
-        } else {
-            for (i32 j = i; j >= 0; j--) {
-                jump_table * next_slot = vec_at_jump_table(jt, j);
-                if (next_slot->pc > (slot->pc + slot->target_offset)) {
-                    slot->next_idx = (u16)j;
-                } else {
-                    break;
-                }
-            }
-            continue;
-        }
+        u32 target_pc = slot->pc + slot->target_offset;
+        slot->next_idx = find_next_jt_idx(jt, target_pc);
     }
 
 #ifdef LOG_INFO_ENABLED
